@@ -964,7 +964,7 @@
             </h1>
             
             <p class="hero-subtitle">
-                A comprehensive toolkit for modifying inputs registered by the Graydient API to a local CLI, bridging media from SaaS to other applications.
+                A comprehensive toolkit for modifying inputs registered by the Graydient API to a local CLI. Build extensions for <strong style="color: var(--phosphor);">Premiere Pro</strong>, <strong style="color: var(--neon-cyan);">DaVinci Resolve</strong>, <strong style="color: var(--neon-pink);">Photoshop</strong>, <strong style="color: var(--amber);">GIMP</strong>, or <strong style="color: #ff6464;">any Windows app</strong>.
             </p>
 
             <div class="hero-stats">
@@ -984,7 +984,7 @@
 
             <div class="hero-cta">
                 <a href="#features" class="btn btn-primary">Explore Features</a>
-                <a href="#deployment" class="btn btn-secondary">Deploy Guide</a>
+                <a href="#extensibility" class="btn btn-secondary" style="border-color: var(--neon-pink); color: var(--neon-pink);">Build Extensions →</a>
             </div>
         </div>
     </section>
@@ -1372,13 +1372,150 @@ output = exchange.run(
         </div>
     </section>
 
+    <!-- Extensibility Section -->
+    <section class="section" id="extensibility" style="background: linear-gradient(180deg, var(--bg-darker) 0%, #0d1420 50%, var(--bg-dark) 100%);">
+        <div class="section-header">
+            <span class="section-tag">Infinite Possibilities</span>
+            <h2 class="section-title" style="color: var(--neon-pink); filter: drop-shadow(0 0 20px rgba(255, 0, 255, 0.3));">Build Anything</h2>
+            <p class="section-desc">
+                The Graydient Exchange isn't just a CLI tool—it's a powerful API bridge that can integrate with <strong style="color: var(--phosphor);">any application</strong> that supports custom extensions.
+            </p>
+        </div>
+
+        <div class="features-grid" style="max-width: 1400px;">
+            <div class="feature-card" data-delay="0" style="border-color: rgba(255, 0, 255, 0.3);">
+                <div class="feature-icon" style="border-color: var(--neon-pink); background: rgba(255, 0, 255, 0.1);">🎬</div>
+                <h3 class="feature-title" style="color: var(--neon-pink);">Adobe Premiere Pro</h3>
+                <p class="feature-desc">
+                    Build panel extensions that generate AI-powered B-roll, create transitions, or produce custom graphics directly in your timeline. Automate repetitive visual effects with generative AI.
+                </p>
+                <div class="feature-code" style="border-left-color: var(--neon-pink);">
+# CEP Panel Extension<br>
+extension.generate_broll(prompt=clip_description)<br>
+extension.apply_transition(style="cyberpunk")
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="100" style="border-color: rgba(0, 170, 255, 0.3);">
+                <div class="feature-icon" style="border-color: #00aaff; background: rgba(0, 170, 255, 0.1);">🎨</div>
+                <h3 class="feature-title" style="color: #00aaff;">DaVinci Resolve</h3>
+                <p class="feature-desc">
+                    Create Fusion scripts and Python plugins that generate backgrounds, create particle effects, or produce custom titles. Integrate AI generation into your color grading workflow.
+                </p>
+                <div class="feature-code" style="border-left-color: #00aaff;">
+# Resolve Python API<br>
+fusion.GenerateBackground(prompt)<br>
+project.ImportImage(ai_output)
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="200" style="border-color: rgba(0, 255, 255, 0.3);">
+                <div class="feature-icon" style="border-color: var(--neon-cyan); background: rgba(0, 255, 255, 0.1);">🖼️</div>
+                <h3 class="feature-title" style="color: var(--neon-cyan);">Adobe Photoshop</h3>
+                <p class="feature-desc">
+                    Develop CEP extensions and UXP plugins for AI-powered image generation, style transfer, and automated batch processing. Create smart objects from text prompts.
+                </p>
+                <div class="feature-code" style="border-left-color: var(--neon-cyan);">
+# UXP Plugin<br>
+await generateLayer(prompt)<br>
+applyStyleTransfer(selectedLayer)
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="300" style="border-color: rgba(255, 170, 0, 0.3);">
+                <div class="feature-icon" style="border-color: var(--amber); background: rgba(255, 170, 0, 0.1);">🐕</div>
+                <h3 class="feature-title" style="color: var(--amber);">GIMP</h3>
+                <p class="feature-desc">
+                    Write Python-Fu scripts that bring AI generation to the open-source world. Create plugins for texture generation, image restoration, and artistic effects.
+                </p>
+                <div class="feature-code" style="border-left-color: var(--amber);">
+# Python-Fu Plugin<br>
+pdb.gimp_image_add_layer(image, ai_layer)<br>
+python_fu_generate_texture(prompt)
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="400" style="border-color: rgba(0, 255, 65, 0.3);">
+                <div class="feature-icon" style="border-color: var(--phosphor); background: rgba(0, 255, 65, 0.1);">🎮</div>
+                <h3 class="feature-title" style="color: var(--phosphor);">Unity & Unreal</h3>
+                <p class="feature-desc">
+                    Build editor tools and runtime systems that generate textures, create skyboxes, or produce concept art directly in your game engine workflow.
+                </p>
+                <div class="feature-code" style="border-left-color: var(--phosphor);">
+# Unity Editor Tool<br>
+Texture2D tex = GenerateTexture(prompt)<br>
+AssetDatabase.CreateAsset(tex, path)
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="500" style="border-color: rgba(255, 100, 100, 0.3);">
+                <div class="feature-icon" style="border-color: #ff6464; background: rgba(255, 100, 100, 0.1);">🪟</div>
+                <h3 class="feature-title" style="color: #ff6464;">Any Windows App</h3>
+                <p class="feature-desc">
+                    If it supports COM, DLL imports, or has a plugin API—you can integrate Graydient. Build standalone tools, browser extensions, or system-wide utilities.
+                </p>
+                <div class="feature-code" style="border-left-color: #ff6464;">
+# COM Interop / DLL<br>
+[DllImport("graydient.dll")]<br>
+static extern IntPtr Generate(string prompt)
+                </div>
+            </div>
+        </div>
+
+        <!-- Integration Showcase -->
+        <div style="max-width: 1000px; margin: 4rem auto 0; padding: 0 2rem;">
+            <div class="code-block" style="border-color: rgba(255, 0, 255, 0.3);">
+                <pre><code><span class="code-comment"># Example: After Effects CEP Extension</span>
+<span class="code-keyword">import</span> graydient_exchange <span class="code-keyword">as</span> gx
+<span class="code-keyword">from</span> graydient_toolkit <span class="code-keyword">import</span> CommandParserEngine
+
+<span class="code-comment"># Initialize the exchange</span>
+exchange = gx.Exchange()
+parser = CommandParserEngine()
+
+<span class="code-comment"># Generate from text prompt</span>
+<span class="code-keyword">def</span> <span class="code-function">generateLayer</span>(prompt, duration=5):
+    parsed = parser.parse(<span class="code-string">f"/draw {prompt} --width 1920 --height 1080"</span>)
+    result = exchange.run(parsed.workflow, parsed.params)
+    
+    <span class="code-comment"># Import into After Effects</span>
+    app.project.importFile(result[<span class="code-string">"image_url"</span>])
+    <span class="code-keyword">return</span> <span class="code-string">"Layer created successfully!"</span>
+
+<span class="code-comment"># User calls from extension panel</span>
+generateLayer(<span class="code-string">"futuristic city skyline at dusk"</span>)</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Challenge Section -->
+    <section class="section" style="background: var(--bg-darker); padding: 4rem 2rem;">
+        <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">⚡</div>
+            <h2 style="font-family: 'Orbitron', sans-serif; font-size: clamp(1.5rem, 4vw, 2.5rem); color: var(--phosphor); margin-bottom: 1.5rem;">
+                Think It Can't Be Done?
+            </h2>
+            <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.8;">
+                If you believe your application <strong style="color: var(--neon-pink);">can't</strong> integrate with Graydient—<br>
+                <span style="color: var(--phosphor);">contact us immediately</span> and we'll prove you wrong.
+            </p>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem;">
+                We've yet to find a Windows application that can't be extended.<br>
+                COM, DLL, API, socket, file-watch, clipboard—we'll find a way.
+            </p>
+            <a href="https://t.me/UnlimitedEditing" target="_blank" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem; background: linear-gradient(135deg, var(--neon-pink), var(--neon-cyan)); box-shadow: 0 0 30px rgba(255, 0, 255, 0.4);">
+                Challenge Us on Telegram →
+            </a>
+        </div>
+    </section>
+
     <!-- Deployment Section -->
     <section class="section deploy-section" id="deployment">
         <div class="section-header">
             <span class="section-tag">Get Started</span>
             <h2 class="section-title" style="color: var(--neon-cyan);">Deployment Guide</h2>
             <p class="section-desc">
-                Follow these steps to integrate the toolkit into your project.
+                Follow these steps to integrate the toolkit into your project—whether it's a CLI tool, web app, or creative software extension.
             </p>
         </div>
 
@@ -1472,6 +1609,7 @@ python -m graydient_toolkit.toolkit_cli --help
         </p>
         <div class="footer-links">
             <a href="#features">Features</a>
+            <a href="#extensibility">Extensions</a>
             <a href="#architecture">Architecture</a>
             <a href="#cli">CLI</a>
             <a href="#deployment">Deploy</a>
@@ -1684,7 +1822,8 @@ python -m graydient_toolkit.toolkit_cli --help
 
         console.log('%c Graydient Toolkit v1.0.0 ', 'background: #00ff41; color: #0a0a0f; font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 8px;');
         console.log('%c Built with 💚 for the AI generation community ', 'color: #00ff41; font-size: 14px;');
-        console.log('%c Contact @UnlimitedEditing on Telegram for support ', 'color: #0088cc; font-size: 12px;');
+        console.log('%c Integrates with ANY Windows application ', 'color: #ff00ff; font-size: 14px; font-weight: bold;');
+        console.log('%c Think it cant be done? Contact @UnlimitedEditing on Telegram ', 'color: #0088cc; font-size: 12px;');
     </script>
 </body>
 </html>
