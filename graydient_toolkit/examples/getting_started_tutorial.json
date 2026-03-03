@@ -1,0 +1,98 @@
+{
+  "id": "getting-started",
+  "title": "Getting Started with Graydient Toolkit",
+  "description": "Learn the basics of using the Graydient Toolkit for AI image generation",
+  "version": "1.0",
+  "author": "Graydient Toolkit Team",
+  "category": "beginner",
+  "difficulty": "beginner",
+  "estimated_duration_minutes": 10,
+  "tags": ["basics", "setup", "first-steps"],
+  "steps": [
+    {
+      "id": "welcome",
+      "title": "Welcome to Graydient Toolkit!",
+      "text": "This tutorial will guide you through the basics of using the Graydient Toolkit for AI-powered image generation.\n\n**What you'll learn:**\n• How to authenticate with the Graydient API\n• How to use Telegram-style commands\n• How to generate your first image\n• How to customize generation parameters",
+      "media": {
+        "media_type": "image",
+        "src": "tutorials/welcome.png",
+        "caption": "Welcome to Graydient Toolkit"
+      },
+      "trigger": "MANUAL",
+      "skippable": false
+    },
+    {
+      "id": "authentication",
+      "title": "Authentication",
+      "text": "First, you need to authenticate with the Graydient API.\n\n1. Get your API key from https://app.graydient.ai/account\n2. Set it as an environment variable: `export GRAYDIENT_KEY=your_key`\n3. Or create a `.env` file with `GRAYDIENT_KEY=your_key`\n\nThe toolkit will automatically use this key for all API calls.",
+      "highlight": {
+        "x": 10,
+        "y": 20,
+        "width": 80,
+        "height": 15,
+        "use_percent": true,
+        "shape": "rectangle",
+        "color": "#00ff41"
+      },
+      "trigger": "MANUAL",
+      "skippable": true
+    },
+    {
+      "id": "first-command",
+      "title": "Your First Command",
+      "text": "Let's create your first image! The basic syntax is:\n\n`/draw <your prompt here>`\n\n**Example:**\n`/draw a serene lake surrounded by mountains at sunset`\n\nThe `/draw` command uses the default image generation workflow. You can also use shortcuts like `/d`.",
+      "media": {
+        "media_type": "image",
+        "src": "tutorials/first-command-example.png",
+        "caption": "Example output from /draw command"
+      },
+      "trigger": "MANUAL",
+      "skippable": true
+    },
+    {
+      "id": "parameters",
+      "title": "Adding Parameters",
+      "text": "You can customize your generation with parameters:\n\n• `--seed <number>` - For reproducible results\n• `--guidance <number>` - How closely to follow the prompt (1-30)\n• `--steps <number>` - Number of generation steps\n• `--width <number>` - Output width in pixels\n• `--height <number>` - Output height in pixels\n\n**Example:**\n`/draw a cyberpunk cat --seed 42 --guidance 8.0 --width 1024`",
+      "code_example": "# Python example\nfrom graydient_toolkit import CommandParserEngine, InputModifier\n\nparser = CommandParserEngine(registry)\nparsed = parser.parse(\"/draw a cat --seed 42\")\nresult = modifier.transform(parsed)\n\n# Execute\noutput = exchange.run(result.workflow, result.params)",
+      "trigger": "MANUAL",
+      "skippable": true
+    },
+    {
+      "id": "negative-prompts",
+      "title": "Negative Prompts",
+      "text": "Sometimes you want to specify what **not** to include. Use square brackets for negative prompts:\n\n`/draw a portrait [blurry, distorted, ugly, deformed]`\n\nYou can also use multiple negative blocks:\n\n`/draw a landscape [blurry] [low quality] [watermark]`\n\nThis helps improve image quality by telling the AI what to avoid.",
+      "media": {
+        "media_type": "slideshow",
+        "src": [
+          "tutorials/without-negative.png",
+          "tutorials/with-negative.png"
+        ],
+        "caption": "Comparison: without vs with negative prompts"
+      },
+      "trigger": "MANUAL",
+      "skippable": true
+    },
+    {
+      "id": "other-commands",
+      "title": "Other Commands",
+      "text": "The toolkit supports many workflows:\n\n• `/animate` or `/a` - Animate still images\n• `/style` or `/s` - Apply style transfer\n• `/upscale` or `/u` - Upscale image resolution\n• `/img2img` or `/i2i` - Image-to-image transformation\n\nEach command maps to a specific workflow in the Graydient API.",
+      "trigger": "MANUAL",
+      "skippable": true
+    },
+    {
+      "id": "completion",
+      "title": "You're Ready!",
+      "text": "Congratulations! You've learned the basics of the Graydient Toolkit.\n\n**Next steps:**\n• Explore more workflows with `graydient-toolkit registry --list`\n• Try different prompts and parameters\n• Check out the tutorial editor to create your own tutorials\n• Read the full documentation\n\nHappy generating! 🎨",
+      "media": {
+        "media_type": "image",
+        "src": "tutorials/completion.png",
+        "caption": "You're all set!"
+      },
+      "trigger": "MANUAL",
+      "skippable": false
+    }
+  ],
+  "prerequisites": [],
+  "created_at": "2024-01-01T00:00:00",
+  "updated_at": "2024-01-01T00:00:00"
+}
