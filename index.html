@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graydient Toolkit | Interactive Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --phosphor: #00ff41;
+            --phosphor-dim: #00cc33;
+            --phosphor-glow: rgba(0, 255, 65, 0.4);
+            --amber: #ffb000;
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --bg-dark: #0a0a0f;
+            --bg-darker: #050508;
+            --bg-panel: #111118;
+            --text-primary: #e0e0e0;
+            --text-secondary: #888888;
+            --border-glow: 0 0 20px var(--phosphor-glow), 0 0 40px rgba(0, 255, 65, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* SVG RGB Distortion Filters */
+        .rgb-distort {
+            position: relative;
+        }
+
+        .rgb-distort::before,
+        .rgb-distort::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .rgb-distort::before {
+            color: #ff0000;
+            animation: rgb-shift-red 3s ease-in-out infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+
+        .rgb-distort::after {
+            color: #00ffff;
+            animation: rgb-shift-cyan 3s ease-in-out infinite;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+
+        @keyframes rgb-shift-red {
+            0%, 100% { transform: translateX(-2px); }
+            50% { transform: translateX(2px); }
+        }
+
+        @keyframes rgb-shift-cyan {
+            0%, 100% { transform: translateX(2px); }
+            50% { transform: translateX(-2px); }
+        }
+
+        /* Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            opacity: 0.3;
+        }
+
+        /* Noise Texture */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, var(--bg-darker) 70%);
+        }
+
+        .hero-bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center top;
+            animation: grid-scroll 20s linear infinite;
+        }
+
+        @keyframes grid-scroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 50px; }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            padding: 2rem;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--phosphor);
+            border-radius: 50px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--phosphor);
+            margin-bottom: 2rem;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px var(--phosphor-glow); }
+            50% { box-shadow: 0 0 30px var(--phosphor-glow), 0 0 50px rgba(0, 255, 65, 0.3); }
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, var(--phosphor) 0%, var(--neon-cyan) 50%, var(--phosphor) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 5s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--phosphor);
+            text-shadow: 0 0 20px var(--phosphor-glow);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--phosphor);
+            color: var(--bg-darker);
+            box-shadow: 0 0 20px var(--phosphor-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 30px var(--phosphor-glow), 0 0 50px rgba(0, 255, 65, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--phosphor);
+            border: 2px solid var(--phosphor);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Floating Elements */
+        .floating-code {
+            position: absolute;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: rgba(0, 255, 65, 0.3);
+            pointer-events: none;
+            white-space: pre;
+        }
+
+        .floating-code:nth-child(1) { top: 10%; left: 5%; animation: float 8s ease-in-out infinite; }
+        .floating-code:nth-child(2) { top: 20%; right: 10%; animation: float 10s ease-in-out infinite 1s; }
+        .floating-code:nth-child(3) { bottom: 20%; left: 8%; animation: float 12s ease-in-out infinite 2s; }
+        .floating-code:nth-child(4) { bottom: 15%; right: 5%; animation: float 9s ease-in-out infinite 0.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-20px) rotate(2deg); opacity: 0.6; }
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 6rem 2rem;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--phosphor);
+            border-radius: 50px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--phosphor);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-desc {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Feature Cards with Animation */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(50px) rotateX(15deg);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0) rotateX(0);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--phosphor), transparent);
+            animation: scan-line 3s linear infinite;
+        }
+
+        @keyframes scan-line {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .feature-card:hover {
+            border-color: var(--phosphor);
+            box-shadow: var(--border-glow);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--phosphor);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .feature-icon::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--phosphor), var(--neon-cyan));
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover .feature-icon::after {
+            opacity: 0.5;
+        }
+
+        .feature-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--phosphor);
+        }
+
+        .feature-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .feature-code {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg-darker);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--phosphor-dim);
+            overflow-x: auto;
+        }
+
+        /* Code Section */
+        .code-section {
+            background: linear-gradient(180deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+        }
+
+        .code-showcase {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .code-showcase {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .code-block {
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: '● ● ●';
+            display: block;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            font-size: 0.5rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.5em;
+        }
+
+        .code-block pre {
+            padding: 1.5rem;
+            margin: 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .code-keyword { color: var(--neon-pink); }
+        .code-function { color: var(--phosphor); }
+        .code-string { color: var(--amber); }
+        .code-comment { color: var(--text-secondary); }
+        .code-number { color: var(--neon-cyan); }
+
+        /* Architecture Diagram */
+        .arch-section {
+            background: var(--bg-darker);
+        }
+
+        .arch-diagram {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .arch-box {
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease;
+        }
+
+        .arch-box.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .arch-box:hover {
+            border-color: var(--phosphor);
+            box-shadow: var(--border-glow);
+        }
+
+        .arch-box-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--phosphor);
+            margin-bottom: 0.5rem;
+        }
+
+        .arch-box-content {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .arch-arrow {
+            text-align: center;
+            color: var(--phosphor);
+            font-size: 1.5rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Module Grid */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .module-card {
+            background: linear-gradient(135deg, var(--bg-panel) 0%, rgba(0, 255, 65, 0.05) 100%);
+            border: 1px solid rgba(0, 255, 65, 0.15);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+
+        .module-card.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .module-card:hover {
+            border-color: var(--phosphor);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 255, 65, 0.1);
+        }
+
+        .module-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--phosphor);
+            margin-bottom: 0.5rem;
+        }
+
+        .module-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .module-lines {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 255, 65, 0.1);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            color: var(--phosphor);
+            margin-top: 0.75rem;
+        }
+
+        /* CLI Commands Section */
+        .cli-section {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #0f1420 100%);
+        }
+
+        .cli-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .cli-card {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s ease;
+        }
+
+        .cli-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cli-header {
+            padding: 1rem 1.5rem;
+            background: rgba(0, 255, 65, 0.05);
+            border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+        }
+
+        .cli-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--phosphor);
+        }
+
+        .cli-body {
+            padding: 1.5rem;
+        }
+
+        .cli-command {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-darker);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--phosphor);
+            color: var(--text-primary);
+        }
+
+        .cli-command .cmd {
+            color: var(--phosphor);
+        }
+
+        .cli-command .arg {
+            color: var(--neon-cyan);
+        }
+
+        .cli-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Deployment Section */
+        .deploy-section {
+            background: var(--bg-darker);
+        }
+
+        .deploy-steps {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .deploy-step {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.6s ease;
+        }
+
+        .deploy-step.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--phosphor), var(--neon-cyan));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--bg-darker);
+            box-shadow: 0 0 30px var(--phosphor-glow);
+        }
+
+        .step-content h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.25rem;
+            color: var(--phosphor);
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .step-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            padding: 1rem;
+            background: var(--bg-panel);
+            border-radius: 8px;
+            border-left: 3px solid var(--phosphor);
+            color: var(--text-primary);
+            overflow-x: auto;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+            text-align: center;
+            padding: 8rem 2rem;
+        }
+
+        .contact-card {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 3rem;
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 65, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .contact-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-text {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .telegram-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #0088cc, #00a8e8);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 136, 204, 0.4);
+        }
+
+        .telegram-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 136, 204, 0.6);
+        }
+
+        .contact-handle {
+            margin-top: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: var(--phosphor);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(0, 255, 65, 0.1);
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--phosphor);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--neon-cyan);
+        }
+
+        /* Parallax Container */
+        .parallax-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .parallax-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            will-change: transform;
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--phosphor), var(--neon-cyan));
+            z-index: 10000;
+            transition: width 0.1s;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--phosphor-dim);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--phosphor);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-stats {
+                gap: 1.5rem;
+            }
+            
+            .stat-value {
+                font-size: 1.75rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cli-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .deploy-step {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Scanlines Overlay -->
+    <div class="scanlines"></div>
+    <div class="noise"></div>
+
+    <!-- SVG Filters for RGB Distortion -->
+    <svg style="display: none;">
+        <defs>
+            <filter id="rgb-split">
+                <feOffset in="SourceGraphic" dx="-2" dy="0" result="red">
+                    <animate attributeName="dx" values="-2;2;-2" dur="3s" repeatCount="indefinite"/>
+                </feOffset>
+                <feOffset in="SourceGraphic" dx="2" dy="0" result="cyan">
+                    <animate attributeName="dx" values="2;-2;2" dur="3s" repeatCount="indefinite"/>
+                </feOffset>
+                <feColorMatrix in="red" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red-channel"/>
+                <feColorMatrix in="cyan" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cyan-channel"/>
+                <feBlend in="red-channel" in2="cyan-channel" mode="screen"/>
+            </filter>
+            
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+            
+            <filter id="distortion">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise">
+                    <animate attributeName="baseFrequency" values="0.01;0.02;0.01" dur="10s" repeatCount="indefinite"/>
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-grid"></div>
+        
+        <!-- Floating Code Elements -->
+        <div class="floating-code">registry.refresh()</div>
+        <div class="floating-code">parser.parse("/draw")</div>
+        <div class="floating-code">modifier.transform()</div>
+        <div class="floating-code">tutorial.start()</div>
+
+        <div class="hero-content">
+            <div class="hero-badge">v1.0.0 • Now Available</div>
+            
+            <h1 class="hero-title">
+                <span class="gradient-text" data-text="GRAYDIENT">GRAYDIENT</span><br>
+                <span style="color: var(--text-primary);" data-text="TOOLKIT">TOOLKIT</span>
+            </h1>
+            
+            <p class="hero-subtitle">
+                A comprehensive toolkit for modifying inputs registered by the Graydient API to a local CLI, bridging media from SaaS to other applications.
+            </p>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-value" data-count="6690">0</div>
+                    <div class="stat-label">Lines of Code</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" data-count="17">0</div>
+                    <div class="stat-label">Modules</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" data-count="8">0</div>
+                    <div class="stat-label">Core Features</div>
+                </div>
+            </div>
+
+            <div class="hero-cta">
+                <a href="#features" class="btn btn-primary">Explore Features</a>
+                <a href="#deployment" class="btn btn-secondary">Deploy Guide</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="section-header">
+            <span class="section-tag">Capabilities</span>
+            <h2 class="section-title" style="color: var(--phosphor);">Core Features</h2>
+            <p class="section-desc">
+                Everything you need to bridge Graydient's powerful AI capabilities to your local CLI workflow.
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card" data-delay="0">
+                <div class="feature-icon">🔍</div>
+                <h3 class="feature-title">Dynamic Method Discovery</h3>
+                <p class="feature-desc">
+                    Automatically fetches and caches workflows and concepts from the Graydient API with configurable TTL. Supports offline mode with cached data.
+                </p>
+                <div class="feature-code">
+registry = MethodRegistry(exchange)<br>
+registry.refresh()  # Auto-caches results
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="100">
+                <div class="feature-icon">💬</div>
+                <h3 class="feature-title">Telegram-Style Commands</h3>
+                <p class="feature-desc">
+                    Parse intuitive /method and [negative] handles. Supports legacy --flag syntax for backward compatibility with auto-complete.
+                </p>
+                <div class="feature-code">
+parser.parse("/draw a cat [blurry] --seed 42")
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="200">
+                <div class="feature-icon">📋</div>
+                <h3 class="feature-title">Method Metadata</h3>
+                <p class="feature-desc">
+                    Rich descriptions, parameter schemas with validation, capabilities tracking (txt2img, img2vid, etc.), and example prompts.
+                </p>
+                <div class="feature-code">
+method = registry.get_workflow("qwen")<br>
+print(method.format_help())
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="300">
+                <div class="feature-icon">🖼️</div>
+                <h3 class="feature-title">Preview Dataset</h3>
+                <p class="feature-desc">
+                    Manage image and video previews for each method. Download from URLs, organize by slug, support slideshows with lazy loading.
+                </p>
+                <div class="feature-code">
+previews.download("qwen", "workflow", url)
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="400">
+                <div class="feature-icon">⚙️</div>
+                <h3 class="feature-title">Input Transformation</h3>
+                <p class="feature-desc">
+                    Transform parsed commands into Exchange-compatible format. Apply defaults, validate inputs, chain custom modifiers.
+                </p>
+                <div class="feature-code">
+modifier = InputModifier(registry)<br>
+result = modifier.transform(parsed)
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="500">
+                <div class="feature-icon">🔧</div>
+                <h3 class="feature-title">Configuration Management</h3>
+                <p class="feature-desc">
+                    User preferences, method aliases, default parameters, tutorial completion tracking with JSON persistence.
+                </p>
+                <div class="feature-code">
+config.add_alias("p", "portrait")<br>
+config.set_default("seed", 42)
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="600">
+                <div class="feature-icon">🎓</div>
+                <h3 class="feature-title">Interactive Tutorials</h3>
+                <p class="feature-desc">
+                    Step-by-step onboarding with screen highlighting, rich annotations (images, videos, slideshows), progress tracking.
+                </p>
+                <div class="feature-code">
+tutorial = TutorialEngine()<br>
+tutorial.load("getting-started")<br>
+tutorial.start()
+                </div>
+            </div>
+
+            <div class="feature-card" data-delay="700">
+                <div class="feature-icon">✏️</div>
+                <h3 class="feature-title">Tutorial Editor</h3>
+                <p class="feature-desc">
+                    GUI tool for creating custom tutorials. Visual step management, region selector, media upload, live preview, JSON export.
+                </p>
+                <div class="feature-code">
+python -m graydient_toolkit tutorial --edit
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Showcase Section -->
+    <section class="section code-section" id="quickstart">
+        <div class="section-header">
+            <span class="section-tag">Quick Start</span>
+            <h2 class="section-title" style="color: var(--neon-cyan);">Get Started in Seconds</h2>
+            <p class="section-desc">
+                Simple, intuitive API that integrates seamlessly with your existing Graydient workflow.
+            </p>
+        </div>
+
+        <div class="code-showcase">
+            <div>
+                <h3 style="font-family: 'Orbitron', sans-serif; color: var(--phosphor); margin-bottom: 1rem;">
+                    Parse Commands
+                </h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Use Telegram-style syntax with positive /methods and negative [handles] for intuitive control.
+                </p>
+                <ul style="color: var(--text-secondary); list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;">✓ <span style="color: var(--phosphor);">/draw</span> for image generation</li>
+                    <li style="margin-bottom: 0.5rem;">✓ <span style="color: var(--phosphor);">/animate</span> for video creation</li>
+                    <li style="margin-bottom: 0.5rem;">✓ <span style="color: var(--neon-pink);">[negative]</span> for exclusions</li>
+                    <li>✓ <span style="color: var(--neon-cyan);">--parameters</span> for fine-tuning</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+                <pre><code><span class="code-keyword">from</span> graydient_exchange <span class="code-keyword">import</span> Exchange
+<span class="code-keyword">from</span> graydient_toolkit <span class="code-keyword">import</span> (
+    MethodRegistry,
+    CommandParserEngine,
+    InputModifier
+)
+
+<span class="code-comment"># Initialize</span>
+exchange = Exchange()
+registry = MethodRegistry(exchange)
+parser = CommandParserEngine(registry)
+modifier = InputModifier(registry)
+
+<span class="code-comment"># Parse command</span>
+parsed = parser.parse(
+    <span class="code-string">"/draw a cyberpunk cat [blurry] --seed 42"</span>
+)
+
+<span class="code-comment"># Transform & Execute</span>
+result = modifier.transform(parsed)
+output = exchange.run(
+    result.workflow,
+    result.params
+)</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="section arch-section" id="architecture">
+        <div class="section-header">
+            <span class="section-tag">System Design</span>
+            <h2 class="section-title" style="color: var(--amber);">Architecture</h2>
+            <p class="section-desc">
+                Modular design with clear separation of concerns for maintainability and extensibility.
+            </p>
+        </div>
+
+        <div class="arch-diagram">
+            <div class="arch-box" data-order="0">
+                <div class="arch-box-title">🔌 Graydient API</div>
+                <div class="arch-box-content">Workflows, Concepts, Media Generation</div>
+            </div>
+            
+            <div class="arch-arrow">↓</div>
+            
+            <div class="arch-box" data-order="1">
+                <div class="arch-box-title">📦 Method Registry</div>
+                <div class="arch-box-content">Dynamic discovery, caching, command mapping</div>
+            </div>
+            
+            <div class="arch-arrow">↓</div>
+            
+            <div class="arch-box" data-order="2">
+                <div class="arch-box-title">⚡ Command Parser Engine</div>
+                <div class="arch-box-content">/method, [negative], --flag syntax support</div>
+            </div>
+            
+            <div class="arch-arrow">↓</div>
+            
+            <div class="arch-box" data-order="3">
+                <div class="arch-box-title">🔧 Input Modifier</div>
+                <div class="arch-box-content">Transformation, validation, defaults</div>
+            </div>
+            
+            <div class="arch-arrow">↓</div>
+            
+            <div class="arch-box" data-order="4">
+                <div class="arch-box-title">🚀 Exchange Execution</div>
+                <div class="arch-box-content">Run workflows, get results</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section class="section" id="modules">
+        <div class="section-header">
+            <span class="section-tag">Codebase</span>
+            <h2 class="section-title" style="color: var(--neon-pink);">Module Overview</h2>
+            <p class="section-desc">
+                6,690+ lines of well-documented Python code across 17 modules.
+            </p>
+        </div>
+
+        <div class="modules-grid">
+            <div class="module-card" data-order="0">
+                <div class="module-name">method_metadata.py</div>
+                <div class="module-desc">MethodMetadata, ParameterDef, Capability enums, preview media schemas</div>
+                <span class="module-lines">~650 lines</span>
+            </div>
+
+            <div class="module-card" data-order="1">
+                <div class="module-name">method_registry.py</div>
+                <div class="module-desc">MethodRegistry with caching, search, command mapping</div>
+                <span class="module-lines">~550 lines</span>
+            </div>
+
+            <div class="module-card" data-order="2">
+                <div class="module-name">command_parser.py</div>
+                <div class="module-desc">CommandParserEngine, ParsedCommand, HandleType, quick_parse</div>
+                <span class="module-lines">~550 lines</span>
+            </div>
+
+            <div class="module-card" data-order="3">
+                <div class="module-name">input_modifier.py</div>
+                <div class="module-desc">InputModifier, PromptBuilder, ModifierChain, preset modifiers</div>
+                <span class="module-lines">~450 lines</span>
+            </div>
+
+            <div class="module-card" data-order="4">
+                <div class="module-name">config_manager.py</div>
+                <div class="module-desc">ConfigManager, ToolkitConfig, InputStyle, DisplayTheme</div>
+                <span class="module-lines">~450 lines</span>
+            </div>
+
+            <div class="module-card" data-order="5">
+                <div class="module-name">preview_dataset.py</div>
+                <div class="module-desc">PreviewDataset, PreviewInfo, download, cache management</div>
+                <span class="module-lines">~550 lines</span>
+            </div>
+
+            <div class="module-card" data-order="6">
+                <div class="module-name">tutorial/engine.py</div>
+                <div class="module-desc">TutorialEngine, TutorialDefinition, TutorialStep, session management</div>
+                <span class="module-lines">~650 lines</span>
+            </div>
+
+            <div class="module-card" data-order="7">
+                <div class="module-name">tutorial/highlight_overlay.py</div>
+                <div class="module-desc">HighlightOverlay, HTML/Tkinter implementations, animations</div>
+                <span class="module-lines">~450 lines</span>
+            </div>
+
+            <div class="module-card" data-order="8">
+                <div class="module-name">tutorial/annotation_panel.py</div>
+                <div class="module-desc">AnnotationPanel, MediaContent, HTML rendering with CSS</div>
+                <span class="module-lines">~550 lines</span>
+            </div>
+
+            <div class="module-card" data-order="9">
+                <div class="module-name">tutorial/tutorial_editor.py</div>
+                <div class="module-desc">GUI editor for creating tutorials with tkinter</div>
+                <span class="module-lines">~750 lines</span>
+            </div>
+
+            <div class="module-card" data-order="10">
+                <div class="module-name">toolkit_cli.py</div>
+                <div class="module-desc">Command-line interface for all toolkit operations</div>
+                <span class="module-lines">~350 lines</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CLI Commands Section -->
+    <section class="section cli-section" id="cli">
+        <div class="section-header">
+            <span class="section-tag">Command Line</span>
+            <h2 class="section-title" style="color: var(--phosphor);">CLI Reference</h2>
+            <p class="section-desc">
+                Powerful command-line interface for managing the toolkit without writing code.
+            </p>
+        </div>
+
+        <div class="cli-grid">
+            <div class="cli-card" data-order="0">
+                <div class="cli-header">
+                    <div class="cli-title">Registry Management</div>
+                </div>
+                <div class="cli-body">
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">registry</span> --refresh --list
+                    </div>
+                    <div class="cli-desc">Refresh and list all available workflows and concepts</div>
+                    
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">registry</span> --search portrait
+                    </div>
+                    <div class="cli-desc">Search for methods matching a query</div>
+                    
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">registry</span> --info qwen
+                    </div>
+                    <div class="cli-desc">Show detailed information about a specific method</div>
+                </div>
+            </div>
+
+            <div class="cli-card" data-order="1">
+                <div class="cli-header">
+                    <div class="cli-title">Command Parsing</div>
+                </div>
+                <div class="cli-body">
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">parse</span> "/draw a cat --seed 42"
+                    </div>
+                    <div class="cli-desc">Parse a command and display the result</div>
+                    
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">parse</span> "/draw a cat" --to-json
+                    </div>
+                    <div class="cli-desc">Output parsed result as JSON</div>
+                </div>
+            </div>
+
+            <div class="cli-card" data-order="2">
+                <div class="cli-header">
+                    <div class="cli-title">Configuration</div>
+                </div>
+                <div class="cli-body">
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">config</span> --show
+                    </div>
+                    <div class="cli-desc">Display current configuration</div>
+                    
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">config</span> --alias p portrait
+                    </div>
+                    <div class="cli-desc">Add a method alias</div>
+                    
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">config</span> --set viewer_port 8888
+                    </div>
+                    <div class="cli-desc">Set a configuration value</div>
+                </div>
+            </div>
+
+            <div class="cli-card" data-order="3">
+                <div class="cli-header">
+                    <div class="cli-title">Tutorials</div>
+                </div>
+                <div class="cli-body">
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">tutorial</span> --list
+                    </div>
+                    <div class="cli-desc">List all available tutorials</div>
+                    
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">tutorial</span> --run getting-started
+                    </div>
+                    <div class="cli-desc">Run a specific tutorial</div>
+                    
+                    <div class="cli-command">
+                        <span class="cmd">graydient-toolkit</span> <span class="arg">tutorial</span> --edit
+                    </div>
+                    <div class="cli-desc">Launch the tutorial editor GUI</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deployment Section -->
+    <section class="section deploy-section" id="deployment">
+        <div class="section-header">
+            <span class="section-tag">Get Started</span>
+            <h2 class="section-title" style="color: var(--neon-cyan);">Deployment Guide</h2>
+            <p class="section-desc">
+                Follow these steps to integrate the toolkit into your project.
+            </p>
+        </div>
+
+        <div class="deploy-steps">
+            <div class="deploy-step" data-order="0">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Copy the Toolkit</h3>
+                    <p>Copy the graydient_toolkit directory to your project folder alongside graydient_exchange.</p>
+                    <div class="step-code">
+cp -r graydient_toolkit /path/to/your/project/
+                    </div>
+                </div>
+            </div>
+
+            <div class="deploy-step" data-order="1">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Set Up Environment</h3>
+                    <p>Ensure your Graydient API key is configured. The toolkit will use GRAYDIENT_KEY from environment variables.</p>
+                    <div class="step-code">
+export GRAYDIENT_KEY=your_api_key_here<br>
+# Or create a .env file with GRAYDIENT_KEY=your_api_key
+                    </div>
+                </div>
+            </div>
+
+            <div class="deploy-step" data-order="2">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Import and Initialize</h3>
+                    <p>Import the toolkit modules in your Python code and initialize the components.</p>
+                    <div class="step-code">
+from graydient_toolkit import (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;MethodRegistry,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CommandParserEngine,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;InputModifier<br>
+)
+                    </div>
+                </div>
+            </div>
+
+            <div class="deploy-step" data-order="3">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Run the Example</h3>
+                    <p>Test your setup by running the basic usage example.</p>
+                    <div class="step-code">
+python graydient_toolkit/examples/basic_usage.py
+                    </div>
+                </div>
+            </div>
+
+            <div class="deploy-step" data-order="4">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Explore the CLI</h3>
+                    <p>Use the command-line interface to manage methods and create tutorials.</p>
+                    <div class="step-code">
+python -m graydient_toolkit.toolkit_cli --help
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="contact-card">
+            <div class="contact-content">
+                <div class="contact-icon">📡</div>
+                <h2 class="contact-title">Need Help?</h2>
+                <p class="contact-text">
+                    If anything in this guide is unclear, or if you'd like special features or extensions for other applications, reach out!
+                </p>
+                <a href="https://t.me/UnlimitedEditing" target="_blank" class="telegram-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.141.121.099.154.232.17.325.015.093.034.305.019.471z"/>
+                    </svg>
+                    Message on Telegram
+                </a>
+                <div class="contact-handle">@UnlimitedEditing</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            Graydient Toolkit v1.0.0 • Built with 💚 for the AI generation community
+        </p>
+        <div class="footer-links">
+            <a href="#features">Features</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#cli">CLI</a>
+            <a href="#deployment">Deploy</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Animations and Interactions -->
+    <script>
+        // Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.getElementById('scrollProgress').style.width = progress + '%';
+        });
+
+        // Intersection Observer for Scroll Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const delay = entry.target.dataset.delay || 0;
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, delay);
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.feature-card, .module-card, .cli-card, .deploy-step, .arch-box').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Sequential animation for architecture boxes
+        const archObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const order = parseInt(entry.target.dataset.order) || 0;
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, order * 200);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.arch-box').forEach(el => {
+            archObserver.observe(el);
+        });
+
+        // Sequential animation for deployment steps
+        const deployObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const order = parseInt(entry.target.dataset.order) || 0;
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, order * 300);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.deploy-step').forEach(el => {
+            deployObserver.observe(el);
+        });
+
+        // Counter Animation for Stats
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            
+            function update() {
+                start += increment;
+                if (start < target) {
+                    element.textContent = Math.floor(start).toLocaleString();
+                    requestAnimationFrame(update);
+                } else {
+                    element.textContent = target.toLocaleString();
+                }
+            }
+            
+            update();
+        }
+
+        // Trigger counter animation when hero is visible
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('.stat-value');
+                    counters.forEach(counter => {
+                        const target = parseInt(counter.dataset.count);
+                        animateCounter(counter, target);
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const heroStats = document.querySelector('.hero-stats');
+        if (heroStats) {
+            statsObserver.observe(heroStats);
+        }
+
+        // Parallax Effect for Hero Background
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroGrid = document.querySelector('.hero-bg-grid');
+            if (heroGrid && scrolled < window.innerHeight) {
+                heroGrid.style.transform = `perspective(500px) rotateX(60deg) translateY(${scrolled * 0.3}px)`;
+            }
+        });
+
+        // RGB Distortion Effect on Mouse Move
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            document.querySelectorAll('.feature-card, .module-card').forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardX = rect.left + rect.width / 2;
+                const cardY = rect.top + rect.height / 2;
+                const distX = (e.clientX - cardX) / 50;
+                const distY = (e.clientY - cardY) / 50;
+                
+                if (Math.abs(distX) < 10 && Math.abs(distY) < 10) {
+                    card.style.transform = `translateY(-5px) rotateX(${-distY}deg) rotateY(${distX}deg)`;
+                }
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Glitch effect for hero title on load
+        window.addEventListener('load', () => {
+            const title = document.querySelector('.hero-title');
+            if (title) {
+                title.style.animation = 'none';
+                setTimeout(() => {
+                    title.style.animation = '';
+                }, 100);
+            }
+        });
+
+        // Terminal typing effect for code blocks
+        function typeWriter(element, text, speed = 30) {
+            let i = 0;
+            element.textContent = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+
+        // Reveal code blocks with typing effect
+        const codeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const codeBlock = entry.target.querySelector('code');
+                    if (codeBlock && !codeBlock.dataset.typed) {
+                        const originalText = codeBlock.textContent;
+                        codeBlock.dataset.typed = 'true';
+                        typeWriter(codeBlock, originalText, 10);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.code-block').forEach(block => {
+            codeObserver.observe(block);
+        });
+
+        // Add hover sound effect simulation (visual feedback)
+        document.querySelectorAll('.btn, .feature-card, .cli-card').forEach(el => {
+            el.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.2s ease';
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Home') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (e.key === 'End') {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        });
+
+        console.log('%c Graydient Toolkit v1.0.0 ', 'background: #00ff41; color: #0a0a0f; font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 8px;');
+        console.log('%c Built with 💚 for the AI generation community ', 'color: #00ff41; font-size: 14px;');
+        console.log('%c Contact @UnlimitedEditing on Telegram for support ', 'color: #0088cc; font-size: 12px;');
+    </script>
+</body>
+</html>
